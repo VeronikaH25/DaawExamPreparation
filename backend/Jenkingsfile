@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    tools {
+        // MUY IMPORTANTE: Este nombre 'Maven' debe ser el mismo 
+        // que pongas luego en la configuración de Jenkins.
+        maven 'Maven' 
+    }
+
+    stages {
+        stage('1. Checkout') {
+            steps {
+                echo 'Descargando código desde GitHub...'
+                checkout scm
+            }
+        }
+
+        stage('2. Compilar') {
+            steps {
+                echo 'Compilando con Maven...'
+                // Usamos 'bat' porque Jenkins corre en Windows
+                bat 'mvn clean compile'
+            }
+        }
+
+        stage('3. Tests') {
+            steps {
+                echo 'Ejecutando pruebas unitarias e integración...'
+                bat 'mvn test'
+            }
+        }
+
+        stage('4. Empaquetar') {
+            steps {
+                echo 'Generando el archivo .war...'
+                bat 'mvn package -DskipTests'
+            }
+        }
+    }
+}
