@@ -1,39 +1,31 @@
 pipeline {
     agent any
 
-    tools {
-        // MUY IMPORTANTE: Este nombre 'Maven' debe ser el mismo 
-        // que pongas luego en la configuración de Jenkins.
-        maven 'Maven' 
-    }
-
     stages {
-        stage('1. Checkout') {
+        stage('Compile Stage') {
             steps {
-                echo 'Descargando código desde GitHub...'
-                checkout scm
+                withMaven(maven: 'maven_3_8_6') {
+                    bat 'mvn clean compile'
+                }
             }
         }
 
-        stage('2. Compilar') {
+        stage('Testing Stage') {
             steps {
-                echo 'Compilando con Maven...'
-                // Usamos 'bat' porque Jenkins corre en Windows
-                bat 'mvn clean compile'
+                withMaven(maven: 'maven_3_8_6') {
+                    bat 'mvn test'
+                }
             }
         }
 
-        stage('3. Tests') {
+        stage('Deployment Stage') {
             steps {
-                echo 'Ejecutando pruebas unitarias e integración...'
-                bat 'mvn test'
-            }
-        }
-
-        stage('4. Empaquetar') {
-            steps {
-                echo 'Generando el archivo .war...'
-                bat 'mvn package -DskipTests'
+                withMaven(maven: 'maven_3_8_6') {
+                    bat 'mvn tomcat7:undeploy'
+                }
+                withMaven(maven: 'maven_3_8_6') {
+                    bat 'mvn tomcat7:deploy'
+                }
             }
         }
     }
