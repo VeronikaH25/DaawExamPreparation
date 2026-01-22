@@ -4,8 +4,13 @@ pipeline {
     stages {
         stage('Compile Stage') {
             steps {
+                // Selecciona la instalación de Maven que configuraste como 'maven' [cite: 92, 101]
                 withMaven(maven: 'maven') {
-                    bat 'mvnw.cmd clean compile'
+                    // Entramos en la subcarpeta donde está el código [cite: 111, 112]
+                    dir('backend') {
+                        // Usamos 'bat' para comandos en Windows [cite: 178, 179]
+                        bat 'mvn clean compile'
+                    }
                 }
             }
         }
@@ -13,7 +18,10 @@ pipeline {
         stage('Testing Stage') {
             steps {
                 withMaven(maven: 'maven') {
-                    bat 'mvn test'
+                    dir('backend') {
+                        // Ejecuta los tests de integración [cite: 160]
+                        bat 'mvn test'
+                    }
                 }
             }
         }
@@ -21,10 +29,11 @@ pipeline {
         stage('Deployment Stage') {
             steps {
                 withMaven(maven: 'maven') {
-                    bat 'mvn tomcat7:undeploy'
-                }
-                withMaven(maven: 'maven') {
-                    bat 'mvn tomcat7:deploy'
+                    dir('backend') {
+                        // Despliegue continuo en Tomcat 10 [cite: 167, 170, 184]
+                        bat 'mvn tomcat7:undeploy'
+                        bat 'mvn tomcat7:deploy'
+                    }
                 }
             }
         }
