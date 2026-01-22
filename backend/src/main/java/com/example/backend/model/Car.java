@@ -1,33 +1,32 @@
 package com.example.backend.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import java.util.List;
 import java.util.ArrayList;
 
-@Entity // Indica que es una tabla de H2
-@Table(name = "cars")
+// Cambiamos @Entity por @Document para MongoDB
+@Document(collection = "cars") 
 public class Car {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    // En MongoDB los IDs suelen ser String (ObjectId)
+    @Id 
+    private String id;
 
-    @NotBlank(message = "La matrícula es obligatoria") // Campo obligatorio
+    @NotBlank(message = "La matrícula es obligatoria")
     private String plate;
 
-    @NotNull(message = "El año es obligatorio") // Campo obligatorio
-    @Column(name="car_year")
+    @NotNull(message = "El año es obligatorio")
+    @Field("car_year") // Equivalente a @Column de JPA
     private Integer year;
 
-    // Relación: Un coche tiene muchos mantenimientos
-    // JsonIgnore es vital para que el GET por ID no entre en bucle infinito
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    /**
+     * En MongoDB, para un examen, lo más sencillo es guardar la lista de mantenimientos
+     * dentro del mismo documento del coche. Desaparece el 'mappedBy'.
+     */
     private List<Maintenance> maintenances = new ArrayList<>();
 
     public Car() {}
@@ -38,8 +37,8 @@ public class Car {
     }
 
     // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
     public String getPlate() { return plate; }
     public void setPlate(String plate) { this.plate = plate; }
     public Integer getYear() { return year; }

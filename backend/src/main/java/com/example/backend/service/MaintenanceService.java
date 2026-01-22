@@ -15,22 +15,23 @@ public class MaintenanceService {
     private MaintenanceRepository maintenanceRepository;
 
     @Autowired
-    private CarService carService; // Inyectamos el servicio de coches para validar
+    private CarService carService; 
 
-    // Crear mantenimiento asociado a un coche específico
-    public Maintenance addMaintenanceToCar(Long carId, Maintenance maintenance) {
-        // 1. Buscamos el coche usando el servicio anterior. 
-        // Si no existe, él mismo lanzará el 404.
+    // CAMBIO: Ahora recibe String carId
+    public Maintenance addMaintenanceToCar(String carId, Maintenance maintenance) {
+        // 1. Validamos que el coche existe (getCarById ya maneja el 404)
         Car car = carService.getCarById(carId);
         
-        // 2. Vinculamos el coche al mantenimiento
-        maintenance.setCar(car);
+        // 2. Vinculamos el ID del coche al mantenimiento
+        maintenance.setCarId(car.getId());
         
-        // 3. Guardamos el mantenimiento
+        // 3. Opcional: Si quieres que el coche también guarde el mantenimiento en su lista
+        car.getMaintenances().add(maintenance);
+        carService.saveCar(car); // Actualizamos el coche en Atlas
+        
         return maintenanceRepository.save(maintenance);
     }
 
-    // Listar todos los mantenimientos (Requisito: GET /maintenance)
     public List<Maintenance> getAll() {
         return maintenanceRepository.findAll();
     }

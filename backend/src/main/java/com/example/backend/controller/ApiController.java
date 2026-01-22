@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api") // Opcional: ayuda a organizar, pero puedes quitarlo si prefieres rutas directas
+@RequestMapping("/api")
 public class ApiController {
 
     @Autowired
@@ -25,24 +25,22 @@ public class ApiController {
     // 1. POST /cars -> Crear un coche
     @PostMapping("/cars")
     public ResponseEntity<Car> createCar(@Valid @RequestBody Car car) {
-        // Devolvemos 201 Created como pide el examen
         return new ResponseEntity<>(carService.saveCar(car), HttpStatus.CREATED);
     }
 
-    // 2. GET /cars/{id} -> Obtener un coche por ID
+    // 2. GET /cars/{id} -> Cambio a String id
     @GetMapping("/cars/{id}")
-    public ResponseEntity<Car> getCarById(@PathVariable Long id) {
-        // El service ya lanza el 404 si no existe
+    public ResponseEntity<Car> getCarById(@PathVariable String id) {
         return ResponseEntity.ok(carService.getCarById(id));
     }
 
-    // 3. POST /cars/{id}/maintenance -> Crear mantenimiento para un coche
+    // 3. POST /cars/{id}/maintenance -> Cambio a String id
     @PostMapping("/cars/{id}/maintenance")
-    public ResponseEntity<Maintenance> addMaintenance(@PathVariable Long id, @Valid @RequestBody Maintenance maintenance) {
+    public ResponseEntity<Maintenance> addMaintenance(@PathVariable String id, @Valid @RequestBody Maintenance maintenance) {
         return new ResponseEntity<>(maintenanceService.addMaintenanceToCar(id, maintenance), HttpStatus.CREATED);
     }
 
-    // 4. GET /maintenance -> Obtener todos los mantenimientos
+    // 4. GET /maintenance -> Listar todos
     @GetMapping("/maintenance")
     public ResponseEntity<List<Maintenance>> getAllMaintenances() {
         return ResponseEntity.ok(maintenanceService.getAll());

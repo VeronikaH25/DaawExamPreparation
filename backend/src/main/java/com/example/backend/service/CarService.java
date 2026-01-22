@@ -15,19 +15,17 @@ public class CarService {
     @Autowired
     private CarRepository carRepository;
 
-    // Crear un coche
     public Car saveCar(Car car) {
         return carRepository.save(car);
     }
 
-    // Buscar por ID (Requisito: Manejo de recurso inexistente -> 404)
-    public Car getCarById(Long id) {
+    // CAMBIO: Ahora recibe String id
+    public Car getCarById(String id) {
         return carRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Car not found with id: " + id));
     }
 
-    // Listar todos los coches
     public List<Car> getAllCars() {
         return carRepository.findAll();
     }
