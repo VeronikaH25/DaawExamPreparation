@@ -67,7 +67,7 @@
                 <configuration>
                     <url>http://localhost:8081/manager/text</url>
                     <server>Tomcat10</server>
-                    <path>/mi-app-coches</path>
+                    <path>/cars</path>
                 </configuration>
             </plugin>
         </plugins>
